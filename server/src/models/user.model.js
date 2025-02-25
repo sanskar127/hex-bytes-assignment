@@ -15,7 +15,7 @@ const UserSchema = new Schema({
         required: true
     },
     superuser: {
-        type: Boolean,
+        type: Schema.Types.Boolean,
         required: true
     }
 }, { timestamps: true })
