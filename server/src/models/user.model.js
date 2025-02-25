@@ -14,10 +14,12 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    isAdmin: {
+    superuser: {
         type: Boolean,
         required: true
     }
 }, { timestamps: true })
 
-export default User = model("User", UserSchema)
+const User = model("User", UserSchema)
+
+export default User
