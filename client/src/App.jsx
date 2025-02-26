@@ -1,34 +1,74 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import UserDashboard from "./pages/UserDashboard/Page.jsx"
+// import SecureRoute from "./components/SecureRoute.jsx"
+import Auth from "./pages/Auth/Page.jsx"
+import { Container } from "@mui/material"
+// import React from 'react'
 
-function App() {
-  const [count, setCount] = useState(0)
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <SecureRoute path='/users' />
+//   },
+//   {
+//     path: '/',
+//     element: <App />,
+//     children: [
+//       {
+//         path: '/users',
+//         element: <Users />
+//       },
+//       {
+//         path: '/analytics',
+//         element: <Analytics />
+//       },
+//     ]
+//   },
+//   {
+//     path: '/login',
+//     element: <Login />
+//   },
+// ])
 
+const router = createBrowserRouter([
+  // {
+  //   path: '/',
+  //   element: <SecureRoute defaultPath="/" redirectTo="/dashboard" />
+  // },
+  {
+    path: '/',
+    element: <Auth />
+  },
+  {
+    path: '/dashboard',
+    element: <UserDashboard currentUser={"Bhaskar Anna"} />
+  }
+])
+
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Container
+      maxWidth={false}
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <Container maxWidth={false}
+        sx={{
+          zIndex: -999,
+          position: "fixed",
+          left: 0,
+          top: 0,
+          backgroundColor: "lightgreen",
+          width: "100%",
+          height: "60vh"
+        }}
+      />
+      <RouterProvider router={router} />
+    </Container>
   )
 }
 
