@@ -2,10 +2,10 @@ import jwt from "jsonwebtoken"
 import dotenv from 'dotenv'
 dotenv.config()
 
-export default (sub) => {
+export default (credentials) => {
     return jwt.sign(
-        { sub },
+        credentials,
         process.env.SECRET,
-        { expiresIn: '15d' }
+        { expiresIn: process.env.EXPIRES_IN }
     )
 }

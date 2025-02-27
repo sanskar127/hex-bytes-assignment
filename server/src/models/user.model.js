@@ -14,8 +14,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    superuser: {
-        type: Schema.Types.Boolean,
+    role: {
+        type: String,
+        enum: ["admin", "user"],
+        default: "user",
         required: true
     }
 }, { timestamps: true })

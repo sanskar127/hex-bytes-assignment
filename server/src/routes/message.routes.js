@@ -1,11 +1,10 @@
 import express from "express"
 import { receiveMessage, sendMessage } from "../controllers/message.controller.js"
-import protectRoute from "../middlewares/protectRoute.middleware.js"
-
+import secureRoute from "../middlewares/secureRoute.middleware.js"
 const Router = express.Router()
 
-Router.post('/send/:id', sendMessage)
+Router.post('/send/:id', secureRoute, sendMessage)
 
-Router.get('/:id', receiveMessage)
+Router.get('/:id', secureRoute, receiveMessage)
 
 export default Router

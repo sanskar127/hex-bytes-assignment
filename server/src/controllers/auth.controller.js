@@ -1,11 +1,12 @@
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken"
 import userModel from '../models/user.model.js'
 import generateJWT from "../utils/jwtTokenGenerate.js"
 
 export const signup = async (req, res) => {
     try {
         // Getting user credentials 
-        const { fullname, email, passwd } = req.body
+        const { fullname, email, passwd, role } = req.body
 
         // Verifying Either the email already exists or not
         if (await userModel.findOne({ email })) {
@@ -23,52 +24,13 @@ export const signup = async (req, res) => {
             fullname,
             email,
             passwd: hashedpasswd,
-            superuser: false
+            role: role ? "admin" : "user"
         })
 
         // Saving User & creating access token
         if (user) {
             await user.save()
-            const token = generateJWT(user._id)
-            res.status(201).json({ authorization: token })
-        } else {
-            res.status(400).json({ message: "Invaild User Credentials" })
-        }
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const signupAdmin = async (req, res) => {
-    try {
-        // Getting user credentials 
-        const { fullname, email, passwd } = req.body
-
-        // Verifying Either the email already exists or not
-        if (await userModel.findOne({ email })) {
-            return res.status(400).json({
-                message: "Entered Email already Exists! Please try with another email."
-            })
-        }
-
-        // password hashing
-        const salt = await bcrypt.genSalt(10)
-        const hashedpasswd = await bcrypt.hash(passwd, salt)
-
-        // Creating New User and sending to db
-        const user = new userModel({
-            fullname,
-            email,
-            passwd: hashedpasswd,
-            superuser: true
-        })
-
-        // Saving User & creating access token
-        if (user) {
-            await user.save()
-            const token = generateJWT(user._id)
-            res.status(201).json({ authorization: token })
+            res.status(201).json({ message: "Account Created Successfully, Please login with your credentials" })
         } else {
             res.status(400).json({ message: "Invaild User Credentials" })
         }
@@ -94,8 +56,24 @@ export const login = async (req, res) => {
         }
 
         // sending Token
-        const token = generateJWT(user._id)
-        res.status(201).json({ authorization: token })
+        const token = generateJWT({ sub: user._id, role: user.role })
+        res.status(201).json({ accesstoken: token })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+export const getDetails = async (req, res) => {
+    try {
+        // Retriving user id
+        const { sub } = req.user
+
+        // fetching user details from token
+        const user = await userModel.findById(sub).select("-passwd")
+
+        // details response
+        res.status(201).json({ details: user })
     }
     catch (error) {
         res.status(500).json({ message: error.message })
