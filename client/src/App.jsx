@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import UserDashboard from "./pages/UserDashboard/Page.jsx"
+import AdminDashboard from "./pages/AdminDashboard/Page.jsx"
 // import SecureRoute from "./components/SecureRoute.jsx"
 import Auth from "./pages/Auth/Page.jsx"
 import { Container } from "@mui/material"
+// import ChatWindow from "./components/ChatWindow.jsx"
 // import React from 'react'
 
 // const router = createBrowserRouter([
@@ -42,6 +44,16 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: <UserDashboard currentUser={"Bhaskar Anna"} />
+  },
+  {
+    path: '/admin/dashboard',
+    element: <AdminDashboard />,
+    children: [
+      {
+        path: '/chats',
+        element: {}
+      }
+    ]
   }
 ])
 
@@ -56,6 +68,7 @@ const App = () => {
         alignItems: 'center'
       }}
     >
+      
       <Container maxWidth={false}
         sx={{
           zIndex: -999,
@@ -67,6 +80,7 @@ const App = () => {
           height: "60vh"
         }}
       />
+      {/* <ChatWindow/> */}
       <RouterProvider router={router} />
     </Container>
   )
