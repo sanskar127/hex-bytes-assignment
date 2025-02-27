@@ -6,7 +6,7 @@ import AuthContainer from "./components/AuthContainer.jsx"
 import { Container } from "@mui/material"
 import Login from "./components/Login.jsx"
 import SignUp from "./components/Signup.jsx"
-import ChatWindow from "./components/ChatWindow.jsx"
+// import ChatWindow from "./components/ChatWindow.jsx"
 
 // const router = createBrowserRouter([
 //   {

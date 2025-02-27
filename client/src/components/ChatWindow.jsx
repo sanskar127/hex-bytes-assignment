@@ -48,15 +48,15 @@ const ChatWindow = () => {
   const handleClose = () => setIsOpen(false);
 
   return (
-    <Container sx={{ display: isOpen ? 'block' : 'none', position: 'fixed', bottom: 0, left: '5%', width: '30%', zIndex: 99 }}>
+    <Container sx={{ display: isOpen ? 'block' : 'none', position: 'fixed', bottom: 0, right: '5%', width: '30%', zIndex: 99 }}>
       <Button
         onClick={() => setIsOpen(!isOpen)}
         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'primary.main', padding: 2, borderRadius: '12px 12px 0 0', width: '100%', height: '50px', '&:hover': { backgroundColor: 'primary.dark' } }}
       >
         <Typography color="white" sx={{ fontSize: '15px', fontWeight: 600 }}>New Chat</Typography>
-        <span onClick={handleClose} style={{ cursor: 'pointer' }}>
+        <IconButton onClick={handleClose} style={{ cursor: 'pointer' }}>
           <CloseIcon sx={{ color: 'white' }} />
-        </span>
+        </IconButton>
       </Button>
 
       {isOpen && (

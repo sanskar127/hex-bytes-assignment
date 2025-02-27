@@ -3,6 +3,7 @@ import { Card, CardContent, Container, Typography } from '@mui/material'
 import { Analytics, Chat, Schedule } from '@mui/icons-material'
 
 const Page = () => {
+
   return (
     <DashboardContainer Placeholder="Admin Dashboard">
       <Container
