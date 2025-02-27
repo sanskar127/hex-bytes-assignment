@@ -1,11 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import UserDashboard from "./pages/UserDashboard/Page.jsx"
 import AdminDashboard from "./pages/AdminDashboard/Page.jsx"
-// import SecureRoute from "./components/SecureRoute.jsx"
-import Auth from "./pages/Auth/Page.jsx"
+import SecureRoute from "./components/SecureRoute.jsx"
+import AuthContainer from "./components/AuthContainer.jsx"
 import { Container } from "@mui/material"
-// import ChatWindow from "./components/ChatWindow.jsx"
-// import React from 'react'
+import Login from "./components/Login.jsx"
+import SignUp from "./components/Signup.jsx"
+import ChatWindow from "./components/ChatWindow.jsx"
 
 // const router = createBrowserRouter([
 //   {
@@ -33,13 +34,23 @@ import { Container } from "@mui/material"
 // ])
 
 const router = createBrowserRouter([
-  // {
-  //   path: '/',
-  //   element: <SecureRoute defaultPath="/" redirectTo="/dashboard" />
-  // },
   {
     path: '/',
-    element: <Auth />
+    element: <SecureRoute redirectTo="/dashboard" />
+  },
+  {
+    path: '/',
+    element: <AuthContainer />,
+    children: [
+      {
+        path: "/login",
+        element: <Login/>
+      },
+      {
+        path: "/signup",
+        element: <SignUp/>
+      }
+    ]
   },
   {
     path: '/dashboard',
@@ -49,10 +60,10 @@ const router = createBrowserRouter([
     path: '/admin/dashboard',
     element: <AdminDashboard />,
     children: [
-      {
-        path: '/chats',
-        element: {}
-      }
+      // {
+      //   path: '/chats',
+      //   element: {}
+      // }
     ]
   }
 ])
@@ -81,6 +92,7 @@ const App = () => {
         }}
       />
       {/* <ChatWindow/> */}
+      {/* {console.log(typeof localStorage.getItem("token"))} */}
       <RouterProvider router={router} />
     </Container>
   )

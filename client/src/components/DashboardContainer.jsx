@@ -1,9 +1,12 @@
 import { Box, Typography, Container, IconButton, Divider } from '@mui/material';
 import { PowerSettingsNew } from '@mui/icons-material';
+import { useDispatch } from "react-redux" 
+import { setAccessToken } from "../features/Auth/authSlice"
 import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = ({ children, Placeholder }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     return (
         // <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -79,7 +82,11 @@ const UserDashboard = ({ children, Placeholder }) => {
                             color: "gray"
                         }
                     }}
-                    onClick={() => navigate('/')}
+                    onClick={() => {
+                        dispatch(setAccessToken(null))
+                        localStorage.removeItem("token")
+                        navigate('/')
+                    }}
                 >
                     <PowerSettingsNew />
                 </IconButton>
