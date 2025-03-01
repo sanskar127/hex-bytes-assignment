@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux"
 const App = () => {
   const { data, error, isLoading } = useGetUsersQuery();
   const dispatch = useDispatch()
+  const selectedChat = useSelector(state => state.chat.selectedChat)
 
   const [minimize, setMinimize] = useState(true);
   const [exit, setExit] = useState(false);
@@ -104,7 +105,7 @@ const App = () => {
 
       <Grid2 size="grow">
         <Box sx={{ padding: "4px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography>User Name</Typography>
+          <Typography>{selectedChat?.fullname}</Typography>
           <IconButton><MoreVertIcon /></IconButton>
         </Box>
         <Divider />

@@ -10,9 +10,7 @@ export default async (req, res, next) => {
             return res.status(401).json({ message: "Access Denied! vaild token not found"})
         }
 
-        const secret = process.env.SECRET
-
-        jwt.verify(token, secret, (err, user) => {
+        jwt.verify(token, process.env.SECRET, (err, user) => {
             if (err) {
                 return res.status(403).json({ message: 'Invalid token' })
             }

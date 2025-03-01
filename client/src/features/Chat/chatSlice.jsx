@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export const chatSlice = createSlice({
-  name: 'conversation',
+  name: 'chat',
   initialState: {
     selectedChat: null,
     messages: [],

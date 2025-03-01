@@ -4,18 +4,19 @@ import AuthContainer from "./components/AuthContainer.jsx"
 import { Container } from "@mui/material"
 import Login from "./components/Login.jsx"
 import SignUp from "./components/Signup.jsx"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from "./features/Auth/authSlice"
 import Chats from "./pages/Chats/Page"
 import ChatWindow from "./components/ChatWindow.jsx"
 import Layout from "./components/Layout.jsx"
+import { io } from "socket.io-client"
 
 const router = createBrowserRouter([
   // Default Route
   {
     path: '',
-    element: <SecureRoute/>
+    element: <SecureRoute />
   },
 
   // Auth Routes
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
   // Secured Routes
   {
     path: '/secured',
-    element: <Layout/>,
+    element: <Layout />,
     children: [
       // Admin Routes
       {
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: 'chats',
-            element: <Chats/>
+            element: <Chats />
           },
         ]
       },
@@ -53,7 +54,7 @@ const router = createBrowserRouter([
       // User Routes
       {
         path: 'chats',
-        element: <ChatWindow/>
+        element: <ChatWindow />
       }
     ]
   }
@@ -61,10 +62,12 @@ const router = createBrowserRouter([
 
 const App = () => {
   const dispatch = useDispatch()
+  const [details, setDetails] = useState({})
   const token = useSelector(state => state.auth.accesstoken)
 
   useEffect(() => {
     if (token) {
+      // Fetching User Details in exchange of accesstoken
       fetch('http://localhost:3000/api/auth/getdetails', {
         method: 'GET',
         headers: {
@@ -72,9 +75,25 @@ const App = () => {
         },
       })
         .then(response => response.json())
-        .then(data => dispatch(setUser(data.details)))
+        .then(data => {
+          setDetails(data.details);
+          dispatch(setUser(data.details));
+        })
+        .catch(error => console.error('Error fetching details:', error));
+
+      // Implementing Socket.io client
+      // const socket = io('http://localhost:3000/', {
+      //   query: { userId: details._id }
+      // })
     }
-  }, [token, dispatch])
+
+    // Cleanup
+    return () => {
+
+    }
+
+  }, [token]); // Only depend on token, not dispatch or details
+
   return (
     <Container
       maxWidth={false}
