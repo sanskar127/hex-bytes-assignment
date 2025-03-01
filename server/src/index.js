@@ -12,21 +12,26 @@ import authRoutesAdmin from "./routes/auth.superuser.routes.js"
 
 const App = express()
 const httpServer = createServer(App)
-const io = new Server(httpServer)
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "PUT", "POST"]
+  }
+})
 dotenv.config()
 
 const PORT = process.env.PORT
 
 // Socket.io
-export const getReceiverSocketId = (receiverId) => userSocketMap[receiverId];
-
 const userSocketMap = {}; // {userId: socketId}
 
-io.on("connection", async (socket) => {
+export const getReceiverSocketId = receiver => userSocketMap[receiver];
+
+io.on("connection", async socket => {
 
   // Extracting User Details from accesstoken
   const user = await getDetails(socket.handshake.query.token)
-  const userId = JSON.stringify(user?._id)
+  const userId = user?._id?.toString()
 
   if (userId !== undefined) {
     userSocketMap[userId] = socket.id;
@@ -37,16 +42,17 @@ io.on("connection", async (socket) => {
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  socket.on("newMessage", ({ receiver, content }) => {
-    const receiverSocketId = getReceiverSocketId(receiver);
+  socket.on("newMessage", ({ receiverId, message }) => {
+    const receiverSocketId = userSocketMap[receiverId]
+    
     if (receiverSocketId) {
-      const newMessage = {
-        sender: userId,
-        receiver,
-        content,
-      };
-
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+      const receivedMessage = {
+        senderId: userId,
+        receiverId,
+        message,
+      }
+      
+      io.to(receiverSocketId).emit("newMessage", receivedMessage);
     }
   });
 

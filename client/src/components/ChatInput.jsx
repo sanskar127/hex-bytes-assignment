@@ -1,42 +1,54 @@
-import { IconButton, FormControl } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import { useState } from 'react';
-import { useSendMessageMutation } from '../api/chatApi';
-import { useSelector } from 'react-redux';
-// import { chatApi } from "../api/chatApi";
+import { IconButton, FormControl } from '@mui/material'
+import SendIcon from '@mui/icons-material/Send'
+import { useState } from 'react'
+import { useSendMessageMutation } from '../api/chatApi'
+import { useSelector, useDispatch } from 'react-redux'
+import { chatApi } from "../api/chatApi"
 
 const ChatInput = () => {
-  const [message, setMessage] = useState("");
-  const [sendMessage, { isLoading }] = useSendMessageMutation();
-  const selectedChat = useSelector(state => state.chat.selectedChat);
-  // const dispatch = useDispatch();
+  const [message, setMessage] = useState("")
+  const [sendMessage, { isLoading }] = useSendMessageMutation()
+  const selectedChat = useSelector(state => state.chat.selectedChat)
+  const socket = useSelector((state) => state.socket.socket)
+  const dispatch = useDispatch()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isLoading || !message.trim()) return; // Prevent sending empty messages
+    e.preventDefault()
+
+    // Check if the message is empty or loading
+    if (isLoading || !message.trim()) return
 
     try {
       const response = await sendMessage({
         receiverId: selectedChat._id,
         message,
-      });
+      }).unwrap()
 
-      console.log(response)
+      if (response) {
+        dispatch(
+          chatApi.util.updateQueryData('getMessages', selectedChat, (draft) => {
+            draft.push(response)  // Add the new message to the list
+          })
+        )
 
-      // if (response) {
-      //   dispatch(
-      //     chatApi.util.updateQueryData('getMessages', selectedChat, (draft) => {
-      //       draft.push(response);  // Add the new message to the list
-      //     })
-      //   );
-      // }
+        // Ensure socket is connected and emit the event
+        if (socket && socket.connected) {
+          socket.emit("newMessage", {
+            receiverId: selectedChat._id,
+            message
+          })
+        } else {
+          console.error("Socket is not connected")
+        }
+      }
     } catch (e) {
-      console.error(e); // log any error
+      console.error(e)
       // Optional: Toast or Snackbar for error feedback
     } finally {
-      setMessage(""); // Clear the input field after the attempt
+      setMessage("")  // Clear the input field after sending the message
     }
-  };
+  }
+
 
   return (
     <FormControl
@@ -70,22 +82,22 @@ const ChatInput = () => {
       <IconButton
         type="submit"
         disabled={isLoading || !message.trim()} // Disable when loading or message is empty
-        // sx={{
-        //   backgroundColor: '#1976d2',
-        //   color: '#fff',
-        //   '&:hover': {
-        //     backgroundColor: '#1565c0',
-        //   },
-        //   borderRadius: '50%',
-        //   transition: 'all 0.3s ease',
-        //   width: 40, // Slightly larger button for better accessibility
-        //   height: 40,
-        // }}
+      // sx={{
+      //   backgroundColor: '#1976d2',
+      //   color: '#fff',
+      //   '&:hover': {
+      //     backgroundColor: '#1565c0',
+      //   },
+      //   borderRadius: '50%',
+      //   transition: 'all 0.3s ease',
+      //   width: 40, // Slightly larger button for better accessibility
+      //   height: 40,
+      // }}
       >
         <SendIcon sx={{ fontSize: '60%' }} />
       </IconButton>
     </FormControl>
-  );
-};
+  )
+}
 
-export default ChatInput;
+export default ChatInput

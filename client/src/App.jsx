@@ -1,16 +1,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import SecureRoute from "./components/SecureRoute.jsx"
-import AuthContainer from "./components/AuthContainer.jsx"
+import SecureRoute from "./components/SecureRoute"
+import AuthContainer from "./components/AuthContainer"
 import { Container } from "@mui/material"
-import Login from "./components/Login.jsx"
-import SignUp from "./components/Signup.jsx"
-import { useEffect, useState } from "react"
+import Login from "./components/Login"
+import SignUp from "./components/Signup"
+import { useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from "./features/Auth/authSlice"
 import Chats from "./pages/Chats/Page"
-import ChatWindow from "./components/ChatWindow.jsx"
-import Layout from "./components/Layout.jsx"
+import ChatWindow from "./components/ChatWindow"
+import Layout from "./components/Layout"
 import { io } from "socket.io-client"
+import { setSocket } from "./features/Socket/socketSlice"
 
 const router = createBrowserRouter([
   // Default Route
@@ -62,37 +63,29 @@ const router = createBrowserRouter([
 
 const App = () => {
   const dispatch = useDispatch()
-  const [details, setDetails] = useState({})
   const token = useSelector(state => state.auth.accesstoken)
 
   useEffect(() => {
     if (token) {
-      // Fetching User Details in exchange of accesstoken
-      fetch('http://localhost:3000/api/auth/getdetails', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          setDetails(data.details);
-          dispatch(setUser(data.details));
-        })
-        .catch(error => console.error('Error fetching details:', error));
-
       // Implementing Socket.io client
-      // const socket = io('http://localhost:3000/', {
-      //   query: { userId: details._id }
-      // })
+      const socket = io('http://localhost:3000/', {
+        query: { token }
+      })
+
+      dispatch(setSocket(socket))
+
+      socket.on("getDetails", data => dispatch(setUser(data)))
+
+      // Cleanup
+      return () => {
+        if (socket) {
+          // socket.off("getOnlineUsers")
+          socket.close()
+          dispatch(setSocket(null))
+        }
+      }
     }
-
-    // Cleanup
-    return () => {
-
-    }
-
-  }, [token]); // Only depend on token, not dispatch or details
+  }, [token, dispatch]);
 
   return (
     <Container
