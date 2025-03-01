@@ -1,74 +1,80 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import UserDashboard from "./pages/UserDashboard/Page.jsx"
-import AdminDashboard from "./pages/AdminDashboard/Page.jsx"
 import SecureRoute from "./components/SecureRoute.jsx"
 import AuthContainer from "./components/AuthContainer.jsx"
 import { Container } from "@mui/material"
 import Login from "./components/Login.jsx"
 import SignUp from "./components/Signup.jsx"
-// import ChatWindow from "./components/ChatWindow.jsx"
-
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <SecureRoute path='/users' />
-//   },
-//   {
-//     path: '/',
-//     element: <App />,
-//     children: [
-//       {
-//         path: '/users',
-//         element: <Users />
-//       },
-//       {
-//         path: '/analytics',
-//         element: <Analytics />
-//       },
-//     ]
-//   },
-//   {
-//     path: '/login',
-//     element: <Login />
-//   },
-// ])
+import { useEffect } from "react"
+import { useSelector, useDispatch } from 'react-redux'
+import { setUser } from "./features/Auth/authSlice"
+import Chats from "./pages/Chats/Page"
+import ChatWindow from "./components/ChatWindow.jsx"
+import Layout from "./components/Layout.jsx"
 
 const router = createBrowserRouter([
+  // Default Route
   {
-    path: '/',
-    element: <SecureRoute redirectTo="/dashboard" />
+    path: '',
+    element: <SecureRoute/>
   },
+
+  // Auth Routes
   {
-    path: '/',
+    path: '/auth',
     element: <AuthContainer />,
     children: [
       {
-        path: "/login",
-        element: <Login/>
+        index: true,
+        element: <Login />
       },
       {
-        path: "/signup",
-        element: <SignUp/>
+        path: "signup",
+        element: <SignUp />
       }
     ]
   },
+
+  // Secured Routes
   {
-    path: '/dashboard',
-    element: <UserDashboard currentUser={"Bhaskar Anna"} />
-  },
-  {
-    path: '/admin/dashboard',
-    element: <AdminDashboard />,
+    path: '/secured',
+    element: <Layout/>,
     children: [
-      // {
-      //   path: '/chats',
-      //   element: {}
-      // }
+      // Admin Routes
+      {
+        path: 'admin',
+        children: [
+          {
+            path: 'chats',
+            element: <Chats/>
+          },
+        ]
+      },
+
+      // User Routes
+      {
+        path: 'chats',
+        element: <ChatWindow/>
+      }
     ]
   }
 ])
 
 const App = () => {
+  const dispatch = useDispatch()
+  const token = useSelector(state => state.auth.accesstoken)
+
+  useEffect(() => {
+    if (token) {
+      fetch('http://localhost:3000/api/auth/getdetails', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+        .then(response => response.json())
+        .then(data => dispatch(setUser(data.details)))
+    }
+  }, [token, dispatch])
   return (
     <Container
       maxWidth={false}
@@ -79,7 +85,7 @@ const App = () => {
         alignItems: 'center'
       }}
     >
-      
+
       <Container maxWidth={false}
         sx={{
           zIndex: -999,

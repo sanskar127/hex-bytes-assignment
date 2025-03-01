@@ -1,27 +1,27 @@
-import { Card, CardContent, Container, Typography } from "@mui/material"
+import { Breadcrumbs, Card, CardContent, Container, Typography } from "@mui/material"
 import DashboardContainer from "../../components/DashboardContainer"
 import { AddCircle, Chat, Schedule } from "@mui/icons-material"
-import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux'
-import { setUser } from "../../features/Auth/authSlice"
+import { Link } from "react-router-dom"
 
 const Page = () => {
-  const dispatch = useDispatch()
-  const token = useSelector(state => state.auth.accesstoken)
 
-  useEffect(() => {
-    fetch('http://localhost:3000/api/auth/getdetails', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(response => response.json())
-      .then(data => dispatch(setUser(data.details)))
-  }, [token, dispatch])
 
   return (
-    <DashboardContainer Placeholder="Welcome User">
+    <DashboardContainer
+      Placeholder={<Breadcrumbs aria-label="breadcrumb">
+        <Link underline="hover" color="inherit" href="/">
+          MUI
+        </Link>
+        <Link
+          underline="hover"
+          color="inherit"
+          href="/material-ui/getting-started/installation/"
+        >
+          Core
+        </Link>
+        <Typography sx={{ color: 'text.primary' }}>Breadcrumbs</Typography>
+      </Breadcrumbs>}
+    >
       <Container
         sx={{
           display: "flex",

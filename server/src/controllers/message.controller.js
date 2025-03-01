@@ -6,8 +6,8 @@ export const sendMessage = async (req, res) => {
         // Retrive Sender id, Receiver id, Message
         const { message } = req.body
         const { id: receiverId } = req.params
-        const senderId = req.user._id
-        
+        const senderId = req.user.sub
+
         // Check whether Conversation exist
         let chat = await ChatModel.findOne({ participants: { $all: [senderId, receiverId] } })
         
@@ -32,14 +32,14 @@ export const sendMessage = async (req, res) => {
         // testing response
         res.status(201).json(newMessage)
     } catch (error) {
-        res.status(500).json({ error: "Can't Send Message" })
+        res.status(500).json({ error: error.message })
     }
 }
 
 export const receiveMessage = async (req, res) => {
     try {
         const { id: userToChatId } = req.params
-        const senderId = req.user._id
+        const senderId = req.user.sub
 
         const chat = await ChatModel.findOne({
             participants: { $all: [senderId, userToChatId] }

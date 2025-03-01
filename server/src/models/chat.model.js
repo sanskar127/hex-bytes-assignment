@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose"
 
 const ChatSchema = new Schema({
-    ticketInfo: {
-        type: Object,
-        ref: "User",
-        required: true
-    },
+    // ticketInfo: {
+    //     type: Object,
+    //     ref: "User",
+    //     required: true
+    // },
     participants: [
         {
             type: Schema.Types.ObjectId,

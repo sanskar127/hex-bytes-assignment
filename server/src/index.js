@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
 import authRoutes from "./routes/auth.user.routes.js"
+import userRoutes from "./routes/user.routes.js"
 import authRoutesAdmin from "./routes/auth.superuser.routes.js"
 import connectionDB from "./database/connectionDB.js"
 import messageRoutes from "./routes/message.routes.js"
@@ -17,6 +18,7 @@ App.use(cors())
 
 // Routes
 App.use('/api/message', messageRoutes)
+App.use('/api/users', userRoutes)
 
 // Admin Routes
 App.use('/api/auth/admin', authRoutesAdmin)

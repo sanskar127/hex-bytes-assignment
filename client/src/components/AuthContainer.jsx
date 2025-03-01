@@ -13,9 +13,9 @@ const AuthContainer = () => {
 
     // Navigate to the respective route when tab is changed
     if (newValue === 0) {
-      navigate('/login');
+      navigate('/auth');
     } else {
-      navigate('/signup');
+      navigate('/auth/signup');
     }
   };
 

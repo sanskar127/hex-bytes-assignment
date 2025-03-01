@@ -33,7 +33,7 @@ const SignUp = () => {
 
       if (data) {
         console.log(data);
-        navigate("/");
+        navigate("/auth");
       }
     } catch (error) {
       console.log('Signup failed:', error);
