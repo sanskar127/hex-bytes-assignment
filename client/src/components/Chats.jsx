@@ -1,32 +1,21 @@
-import { Box, Paper, Typography, CircularProgress } from '@mui/material';
-import { chatApi, useGetMessagesQuery } from "../api/chatApi";
+// import { useEffect } from 'react';
+import { useGetMessagesQuery } from "../api/chatApi";
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages } from "../features/Chat/chatSlice";
-import { useEffect } from 'react';
-import { setMessages } from "../features/Chat/chatSlice"
+import { Box, Paper, Typography, CircularProgress } from '@mui/material';
+import { useEffect } from "react";
 
-const Chats = ({ background }) => {
+const Chats = () => {
   const dispatch = useDispatch();
-  const socket = useSelector((state) => state.socket.socket);
-  const selectedChat = useSelector(state => state.chat.selectedChat);
   const messages = useSelector(state => state.chat.messages);
-  const { data, isLoading, error } = useGetMessagesQuery(selectedChat?._id, { skip: !selectedChat?._id });
-  dispatch(setMessages(data))
+  const selectedChat = useSelector(state => state.chat.selectedChat);
+  const { data: data = [], isLoading, error } = useGetMessagesQuery(selectedChat?._id, { skip: !selectedChat?._id });
 
-  useEffect(() => {
-    if (socket && selectedChat?._id) {
-      socket.on("newMessage", (maal) => {
-        // dispatch(
-        //   chatApi.util.updateQueryData('getMessages', selectedChat?._id, (draft) => {
-        //     draft.push(maal);
-        //   })
-        // );
-        dispatch(setMessages([...messages, maal]))
-      });
-
-      return () => socket?.off("newMessage");
-    }
-  }, [socket, dispatch, selectedChat])
+  // useEffect(() => {
+  //   if (data) {
+  //     dispatch(setMessages(data))
+  //   }
+  // }, [data, dispatch])
 
   if (isLoading) {
     return (
@@ -51,9 +40,6 @@ const Chats = ({ background }) => {
       padding: 1,
       display: 'flex',
       flexDirection: 'column',
-      backgroundImage: background ? `url(${background})` : 'none',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
     }}>
       {messages?.map((message, index) => {
         // Add a safety check to ensure message is defined and has the necessary properties

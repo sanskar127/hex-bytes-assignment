@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 
-
 const SecureRoute = () => {
   const user = useSelector(state => state.auth.user)
   const token = useSelector(state => state.auth.accesstoken)
@@ -14,7 +13,7 @@ const SecureRoute = () => {
 
     // When Super User Logged in
     if (user.role === "admin") {
-      return <Navigate to='/secured/admin' replace />
+      return <Navigate to='/secured/admin/chats' replace />
     }
 
     // When User Logged in

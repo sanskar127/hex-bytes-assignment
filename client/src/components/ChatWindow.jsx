@@ -1,8 +1,8 @@
-import { Box, Button, Container, Typography, IconButton, Paper, TextField, FormControl } from '@mui/material';
+import { Box, Button, Container, Typography, IconButton, Paper, TextField, FormControl, Divider } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
-import ChatBackground from "../assets/chat_background.jpg";
+import background from "../assets/chat_background.jpg";
 import Chats from "./Chats"
 import ChatInput from "./ChatInput"
 import { useDispatch } from 'react-redux';
@@ -57,7 +57,7 @@ const ChatWindow = () => {
     <Container sx={{ display: exit ? 'block' : 'none', position: 'fixed', bottom: 0, right: '5%', width: '30%', zIndex: 99 }}>
       <Button
         onClick={() => setMinimize(prev => !prev)}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'primary.main', padding: 2, borderRadius: '12px 12px 0 0', width: '100%', height: '50px', '&:hover': { backgroundColor: 'primary.dark' } }}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'primary.main', boxShadow: 3, padding: 2, borderRadius: '12px 12px 0 0', width: '100%', height: '50px', '&:hover': { backgroundColor: 'primary.dark' } }}
       >
         <Typography color="white" sx={{ fontSize: '15px', fontWeight: 600 }}>New Chat</Typography>
         <IconButton onClick={() => setExit(!exit)} style={{ cursor: 'pointer' }}>
@@ -92,10 +92,16 @@ const ChatWindow = () => {
         //     </Box>
         //   </FormControl>
         // </Box>
-        <>
-          <Chats background={ChatBackground} />
+        <Box sx={{
+          borderRadius: '0 0 12px 12px', boxShadow: 3, padding: 2, maxWidth: '100%', height: '60vh', display: 'flex', flexDirection: 'column', justifyContent: "space-between",
+          backgroundImage: background ? `url(${background})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}>
+          <Chats />
+          <Divider sx={{ marginY: "6px", opacity: 0 }} />
           <ChatInput />
-        </>
+        </Box>
       )}
     </Container>
   );

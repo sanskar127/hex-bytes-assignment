@@ -1,16 +1,16 @@
-import { IconButton, FormControl } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
 import { useState } from 'react'
+import SendIcon from '@mui/icons-material/Send'
+import { IconButton, FormControl } from '@mui/material'
 import { useSendMessageMutation } from '../api/chatApi'
 import { useSelector, useDispatch } from 'react-redux'
-import { chatApi } from "../api/chatApi"
+import { newMessage } from "../features/Chat/chatSlice"
 
 const ChatInput = () => {
+  const dispatch = useDispatch()
   const [message, setMessage] = useState("")
+  const socket = useSelector((state) => state.socket.socket)
   const [sendMessage, { isLoading }] = useSendMessageMutation()
   const selectedChat = useSelector(state => state.chat.selectedChat)
-  const socket = useSelector((state) => state.socket.socket)
-  const dispatch = useDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,35 +18,24 @@ const ChatInput = () => {
     // Check if the message is empty or loading
     if (isLoading || !message.trim()) return
 
-    try {
-      const response = await sendMessage({
+    await sendMessage({
+      receiverId: selectedChat._id,
+      message,
+    }).unwrap()
+
+    // Ensure socket is connected and emit the event
+    if (socket && socket.connected) {
+      socket.emit("newMessage", {
         receiverId: selectedChat._id,
-        message,
-      }).unwrap()
-
-      if (response) {
-        dispatch(
-          chatApi.util.updateQueryData('getMessages', selectedChat, (draft) => {
-            draft.push(response)  // Add the new message to the list
-          })
-        )
-
-        // Ensure socket is connected and emit the event
-        if (socket && socket.connected) {
-          socket.emit("newMessage", {
-            receiverId: selectedChat._id,
-            message
-          })
-        } else {
-          console.error("Socket is not connected")
-        }
-      }
-    } catch (e) {
-      console.error(e)
-      // Optional: Toast or Snackbar for error feedback
-    } finally {
-      setMessage("")  // Clear the input field after sending the message
+        message
+      })
+      dispatch(newMessage(message))
+      console.log(message)
+    } else {
+      console.error("Socket is not connected")
     }
+
+    setMessage("")
   }
 
 
@@ -55,12 +44,11 @@ const ChatInput = () => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        bgcolor: "white",
+        bgcolor: "#ffffff80",
         border: "1px solid #0000001F",
         borderRadius: "15px",
         display: 'flex',
         flexDirection: "row",
-        margin: "20px",
         padding: "0 8px",
         alignItems: 'center',
       }}
@@ -81,18 +69,7 @@ const ChatInput = () => {
 
       <IconButton
         type="submit"
-        disabled={isLoading || !message.trim()} // Disable when loading or message is empty
-      // sx={{
-      //   backgroundColor: '#1976d2',
-      //   color: '#fff',
-      //   '&:hover': {
-      //     backgroundColor: '#1565c0',
-      //   },
-      //   borderRadius: '50%',
-      //   transition: 'all 0.3s ease',
-      //   width: 40, // Slightly larger button for better accessibility
-      //   height: 40,
-      // }}
+        disabled={isLoading || !message.trim()}
       >
         <SendIcon sx={{ fontSize: '60%' }} />
       </IconButton>

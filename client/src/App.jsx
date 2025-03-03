@@ -4,14 +4,10 @@ import AuthContainer from "./components/AuthContainer"
 import { Container } from "@mui/material"
 import Login from "./components/Login"
 import SignUp from "./components/Signup"
-import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux'
-import { setUser } from "./features/Auth/authSlice"
 import Chats from "./pages/Chats/Page"
 import ChatWindow from "./components/ChatWindow"
 import Layout from "./components/Layout"
-import { io } from "socket.io-client"
-import { setSocket } from "./features/Socket/socketSlice"
+import { useSocket } from "./hooks/useSocket"
 
 const router = createBrowserRouter([
   // Default Route
@@ -62,30 +58,9 @@ const router = createBrowserRouter([
 ])
 
 const App = () => {
-  const dispatch = useDispatch()
-  const token = useSelector(state => state.auth.accesstoken)
-
-  useEffect(() => {
-    if (token) {
-      // Implementing Socket.io client
-      const socket = io('http://localhost:3000/', {
-        query: { token }
-      })
-
-      dispatch(setSocket(socket))
-
-      socket.on("getDetails", data => dispatch(setUser(data)))
-
-      // Cleanup
-      return () => {
-        if (socket) {
-          // socket.off("getOnlineUsers")
-          socket.close()
-          dispatch(setSocket(null))
-        }
-      }
-    }
-  }, [token, dispatch]);
+  
+  // Listening Socket
+  useSocket()
 
   return (
     <Container
@@ -109,8 +84,7 @@ const App = () => {
           height: "60vh"
         }}
       />
-      {/* <ChatWindow/> */}
-      {/* {console.log(typeof localStorage.getItem("token"))} */}
+
       <RouterProvider router={router} />
     </Container>
   )

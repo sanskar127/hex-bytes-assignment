@@ -7,7 +7,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 const Layout = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
-
+    
     return (
         <Box
             display="flex"

@@ -16,7 +16,8 @@ export const chatApi = createApi({
     }),
     endpoints: builder => ({
         getMessages: builder.query({
-            query: receiverId => `/message/${receiverId}`
+            query: receiverId => `/message/${receiverId}`,
+            // providesTags: ['messages']
         }),
         sendMessage: builder.mutation({
             query: ({ receiverId, message }) => ({
@@ -24,6 +25,7 @@ export const chatApi = createApi({
                 method: 'PUT',
                 body: {message},
             }),
+            // invalidatesTags: ['messages']
         }),
         getUsers: builder.query({
             query: () => '/users',
